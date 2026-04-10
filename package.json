@@ -1,0 +1,28 @@
+{
+  "name": "skillweave-0g-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/hunters-code/skillweave-0g-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/hunters-code/skillweave-0g-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunters-code/skillweave-0g-sdk.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@0gfoundation/0g-ts-sdk": "^1.2.1",
+    "axios": "^1.15.0",
+    "ethers": "^6.16.0"
+  },
+  "resolutions": {
+    "axios": "1.15.0"
+  }
+}
