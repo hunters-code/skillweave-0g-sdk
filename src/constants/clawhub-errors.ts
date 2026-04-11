@@ -32,41 +32,33 @@ export function formatClawhubPublishFailedMessage(
 ): string {
   return `Failed to publish skill "${slug}": ${detail}`;
 }
-
 export function formatClawhubDeleteFailedMessage(
   slug: string,
   detail: string
 ): string {
   return `Failed to delete skill "${slug}": ${detail}`;
 }
-
 export function formatClawhubUndeleteFailedMessage(
   slug: string,
   detail: string
 ): string {
   return `Failed to undelete skill "${slug}": ${detail}`;
 }
-
 export function formatClawhubGetSkillFailedMessage(
   slug: string,
   detail: string
 ): string {
   return `Failed to get skill "${slug}": ${detail}`;
 }
-
 export function formatClawhubListSkillsFailedMessage(detail: string): string {
   return `Failed to list skills: ${detail}`;
 }
-
 export function formatClawhubWhoamiFailedMessage(detail: string): string {
   return `Failed whoami: ${detail}`;
 }
-
 export function formatClawhubSearchFailedMessage(detail: string): string {
   return `Failed to search skills: ${detail}`;
 }
 
 export const ERR_CLAWHUB_PUBLISH_NO_FILES = "publishSkill requires at least one file";
-
-export const ERR_CLAWHUB_PUBLISH_SKILL_MD_REQUIRED =
-  "ClawHub requires SKILL.md or skills.md in the uploaded files";
+export const ERR_CLAWHUB_PUBLISH_SKILL_MD_REQUIRED = "ClawHub requires SKILL.md or skills.md in the uploaded files";
