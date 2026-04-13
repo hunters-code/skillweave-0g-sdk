@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsup",
     "compile": "hardhat compile",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "test:contracts": "hardhat test",
     "typecheck": "tsc --noEmit",
