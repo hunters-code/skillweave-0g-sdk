@@ -15,9 +15,8 @@ contract SkillRegistry is Ownable, ReentrancyGuard {
         string name;
         string version;
         address owner;
-        string endpoint;
+        string slug;
         string description;
-        string metadataURI;
         bool isActive;
         uint256 createdAt;
         uint256 updatedAt;
@@ -47,7 +46,7 @@ contract SkillRegistry is Ownable, ReentrancyGuard {
     error EmptyName();
     error NameTooLong();
     error EmptyVersion();
-    error EmptyEndpoint();
+    error EmptySlug();
     error SkillAlreadyRegistered(bytes32 skillId);
     error SkillNotFound(bytes32 skillId);
     error NotSkillOwner();
@@ -63,22 +62,20 @@ contract SkillRegistry is Ownable, ReentrancyGuard {
      * @notice Register a new skill.
      * @param name        Human-readable skill name (max 64 bytes).
      * @param version     Semantic version string (e.g. "1.0.0").
-     * @param endpoint    URL or handler reference where the skill is served.
+     * @param slug        Clawhub skill slug (e.g. "my-skill-name").
      * @param description Short description of the skill.
-     * @param metadataURI IPFS/HTTPS URI pointing to extended metadata.
      * @return skillId    keccak256(name, version, msg.sender)
      */
     function registerSkill(
         string calldata name,
         string calldata version,
-        string calldata endpoint,
-        string calldata description,
-        string calldata metadataURI
+        string calldata slug,
+        string calldata description
     ) external nonReentrant returns (bytes32 skillId) {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(name).length > MAX_NAME_LENGTH) revert NameTooLong();
         if (bytes(version).length == 0) revert EmptyVersion();
-        if (bytes(endpoint).length == 0) revert EmptyEndpoint();
+        if (bytes(slug).length == 0) revert EmptySlug();
 
         skillId = keccak256(abi.encode(name, version, msg.sender));
 
@@ -89,9 +86,8 @@ contract SkillRegistry is Ownable, ReentrancyGuard {
             name: name,
             version: version,
             owner: msg.sender,
-            endpoint: endpoint,
+            slug: slug,
             description: description,
-            metadataURI: metadataURI,
             isActive: true,
             createdAt: block.timestamp,
             updatedAt: block.timestamp
@@ -108,19 +104,17 @@ contract SkillRegistry is Ownable, ReentrancyGuard {
      */
     function updateSkill(
         bytes32 skillId,
-        string calldata endpoint,
-        string calldata description,
-        string calldata metadataURI
+        string calldata slug,
+        string calldata description
     ) external {
         Skill storage skill = _skills[skillId];
         if (skill.createdAt == 0) revert SkillNotFound(skillId);
         if (skill.owner != msg.sender) revert NotSkillOwner();
         if (!skill.isActive) revert SkillNotActive();
-        if (bytes(endpoint).length == 0) revert EmptyEndpoint();
+        if (bytes(slug).length == 0) revert EmptySlug();
 
-        skill.endpoint = endpoint;
+        skill.slug = slug;
         skill.description = description;
-        skill.metadataURI = metadataURI;
         skill.updatedAt = block.timestamp;
 
         emit SkillUpdated(skillId);

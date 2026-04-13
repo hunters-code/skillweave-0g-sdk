@@ -20,9 +20,8 @@ describe("SkillRegistry", function () {
 
   const SKILL_NAME = "my-skill";
   const SKILL_VERSION = "1.0.0";
-  const SKILL_ENDPOINT = "https://api.example.com/skill";
+  const SKILL_SLUG = "my-skill";
   const SKILL_DESCRIPTION = "A test skill";
-  const SKILL_METADATA_URI = "ipfs://QmTest";
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
@@ -39,7 +38,7 @@ describe("SkillRegistry", function () {
       await expect(
         registry
           .connect(user1)
-          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       )
         .to.emit(registry, "SkillRegistered")
         .withArgs(expectedSkillId, user1.address, SKILL_NAME, SKILL_VERSION);
@@ -49,7 +48,7 @@ describe("SkillRegistry", function () {
       const expectedSkillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       const tx = registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
       // Verify via getSkill after registration
       await tx;
       const skill = await registry.getSkill(expectedSkillId);
@@ -59,20 +58,20 @@ describe("SkillRegistry", function () {
     it("should revert on duplicate registration", async function () {
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
 
       const expectedSkillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await expect(
         registry
           .connect(user1)
-          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "SkillAlreadyRegistered")
         .withArgs(expectedSkillId);
     });
 
     it("should revert with empty name", async function () {
       await expect(
-        registry.connect(user1).registerSkill("", SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+        registry.connect(user1).registerSkill("", SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "EmptyName");
     });
 
@@ -81,7 +80,7 @@ describe("SkillRegistry", function () {
       await expect(
         registry
           .connect(user1)
-          .registerSkill(longName, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+          .registerSkill(longName, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "NameTooLong");
     });
 
@@ -90,32 +89,32 @@ describe("SkillRegistry", function () {
       await expect(
         registry
           .connect(user1)
-          .registerSkill(maxName, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+          .registerSkill(maxName, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.not.be.reverted;
     });
 
     it("should revert with empty version", async function () {
       await expect(
-        registry.connect(user1).registerSkill(SKILL_NAME, "", SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+        registry.connect(user1).registerSkill(SKILL_NAME, "", SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "EmptyVersion");
     });
 
-    it("should revert with empty endpoint", async function () {
+    it("should revert with empty slug", async function () {
       await expect(
-        registry.connect(user1).registerSkill(SKILL_NAME, SKILL_VERSION, "", SKILL_DESCRIPTION, SKILL_METADATA_URI)
-      ).to.be.revertedWithCustomError(registry, "EmptyEndpoint");
+        registry.connect(user1).registerSkill(SKILL_NAME, SKILL_VERSION, "", SKILL_DESCRIPTION)
+      ).to.be.revertedWithCustomError(registry, "EmptySlug");
     });
 
     it("should allow two different users to register the same name and version", async function () {
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
 
       // user2 registers same name+version — different owner ⟹ different skillId
       await expect(
         registry
           .connect(user2)
-          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+          .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.not.be.reverted;
     });
   });
@@ -129,7 +128,7 @@ describe("SkillRegistry", function () {
       skillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
     });
 
     it("should return the correct skill data", async function () {
@@ -138,9 +137,8 @@ describe("SkillRegistry", function () {
       expect(skill.name).to.equal(SKILL_NAME);
       expect(skill.version).to.equal(SKILL_VERSION);
       expect(skill.owner).to.equal(user1.address);
-      expect(skill.endpoint).to.equal(SKILL_ENDPOINT);
+      expect(skill.slug).to.equal(SKILL_SLUG);
       expect(skill.description).to.equal(SKILL_DESCRIPTION);
-      expect(skill.metadataURI).to.equal(SKILL_METADATA_URI);
       expect(skill.isActive).to.be.true;
       expect(skill.createdAt).to.be.gt(0n);
       expect(skill.updatedAt).to.equal(skill.createdAt);
@@ -159,7 +157,7 @@ describe("SkillRegistry", function () {
       const skillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
       expect(await registry.isRegistered(skillId)).to.be.true;
     });
 
@@ -178,22 +176,20 @@ describe("SkillRegistry", function () {
       skillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
     });
 
     it("should update skill fields and emit SkillUpdated", async function () {
-      const newEndpoint = "https://api.example.com/v2/skill";
+      const newSlug = "my-skill-v2";
       const newDescription = "Updated description";
-      const newMetadataURI = "ipfs://QmUpdated";
 
-      await expect(registry.connect(user1).updateSkill(skillId, newEndpoint, newDescription, newMetadataURI))
+      await expect(registry.connect(user1).updateSkill(skillId, newSlug, newDescription))
         .to.emit(registry, "SkillUpdated")
         .withArgs(skillId);
 
       const skill = await registry.getSkill(skillId);
-      expect(skill.endpoint).to.equal(newEndpoint);
+      expect(skill.slug).to.equal(newSlug);
       expect(skill.description).to.equal(newDescription);
-      expect(skill.metadataURI).to.equal(newMetadataURI);
     });
 
     it("should update updatedAt timestamp", async function () {
@@ -203,7 +199,7 @@ describe("SkillRegistry", function () {
       await ethers.provider.send("evm_increaseTime", [10]);
       await ethers.provider.send("evm_mine", []);
 
-      await registry.connect(user1).updateSkill(skillId, "https://new.endpoint", SKILL_DESCRIPTION, SKILL_METADATA_URI);
+      await registry.connect(user1).updateSkill(skillId, "new-skill-slug", SKILL_DESCRIPTION);
 
       const after = (await registry.getSkill(skillId)).updatedAt;
       expect(after).to.be.gt(before);
@@ -211,27 +207,27 @@ describe("SkillRegistry", function () {
 
     it("should revert when non-owner tries to update", async function () {
       await expect(
-        registry.connect(user2).updateSkill(skillId, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+        registry.connect(user2).updateSkill(skillId, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "NotSkillOwner");
     });
 
     it("should revert for non-existent skill", async function () {
       const fakeId = ethers.keccak256(ethers.toUtf8Bytes("nonexistent"));
       await expect(
-        registry.connect(user1).updateSkill(fakeId, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+        registry.connect(user1).updateSkill(fakeId, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "SkillNotFound");
     });
 
-    it("should revert with empty endpoint", async function () {
+    it("should revert with empty slug", async function () {
       await expect(
-        registry.connect(user1).updateSkill(skillId, "", SKILL_DESCRIPTION, SKILL_METADATA_URI)
-      ).to.be.revertedWithCustomError(registry, "EmptyEndpoint");
+        registry.connect(user1).updateSkill(skillId, "", SKILL_DESCRIPTION)
+      ).to.be.revertedWithCustomError(registry, "EmptySlug");
     });
 
     it("should revert when updating a deactivated skill", async function () {
       await registry.connect(user1).deactivateSkill(skillId);
       await expect(
-        registry.connect(user1).updateSkill(skillId, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI)
+        registry.connect(user1).updateSkill(skillId, SKILL_SLUG, SKILL_DESCRIPTION)
       ).to.be.revertedWithCustomError(registry, "SkillNotActive");
     });
   });
@@ -245,7 +241,7 @@ describe("SkillRegistry", function () {
       skillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
     });
 
     it("should set isActive to false and emit SkillDeactivated", async function () {
@@ -299,10 +295,10 @@ describe("SkillRegistry", function () {
 
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, "1.0.0", SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, "1.0.0", SKILL_SLUG, SKILL_DESCRIPTION);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, "2.0.0", SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, "2.0.0", SKILL_SLUG, SKILL_DESCRIPTION);
 
       const skills = await registry.getSkillsByOwner(user1.address);
       expect(skills).to.have.length(2);
@@ -313,10 +309,10 @@ describe("SkillRegistry", function () {
     it("should not include skills registered by another owner", async function () {
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
       await registry
         .connect(user2)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
 
       const user1Skills = await registry.getSkillsByOwner(user1.address);
       const user2Skills = await registry.getSkillsByOwner(user2.address);
@@ -330,7 +326,7 @@ describe("SkillRegistry", function () {
       const skillId = computeSkillId(SKILL_NAME, SKILL_VERSION, user1.address);
       await registry
         .connect(user1)
-        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_ENDPOINT, SKILL_DESCRIPTION, SKILL_METADATA_URI);
+        .registerSkill(SKILL_NAME, SKILL_VERSION, SKILL_SLUG, SKILL_DESCRIPTION);
       await registry.connect(user1).deactivateSkill(skillId);
 
       const skills = await registry.getSkillsByOwner(user1.address);

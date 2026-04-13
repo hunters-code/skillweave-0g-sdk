@@ -55,11 +55,11 @@ Build the complete SkillWeave system: Solidity smart contracts (Hardhat) first, 
 
 **Location:** `contracts/SkillRegistry.sol`
 
-- **Struct:** `Skill` (id, name, version, owner, endpoint, description, metadataURI, isActive, createdAt, updatedAt)
+- **Struct:** `Skill` (id, name, version, owner, slug, description, isActive, createdAt, updatedAt)
 - **Storage:** `mapping(bytes32 => Skill)` keyed by `keccak256(name, version, owner)`
 - **Functions:**
-  - `registerSkill(name, version, endpoint, description, metadataURI)` → emits `SkillRegistered(skillId, owner, name, version)`, returns `bytes32 skillId`
-  - `updateSkill(skillId, endpoint, description, metadataURI)` → owner-only, emits `SkillUpdated(skillId)`
+  - `registerSkill(name, version, slug, description)` → emits `SkillRegistered(skillId, owner, name, version)`, returns `bytes32 skillId`
+  - `updateSkill(skillId, slug, description)` → owner-only, emits `SkillUpdated(skillId)`
   - `deactivateSkill(skillId)` → owner-only, emits `SkillDeactivated(skillId)`
   - `getSkill(skillId)` → view, returns Skill struct
   - `isRegistered(skillId)` → view, returns bool
