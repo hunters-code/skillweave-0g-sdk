@@ -2,8 +2,8 @@ import { ERR_CLAWHUB_CLIENT_NOT_INITIALIZED } from "../constants/client-errors";
 import {
   ClawhubClient,
   ClawhubClientConfig,
-  type ClawhubPublishSkillInput,
-  type ClawhubPublishSkillResponse,
+  type ClawhubPublishPluginInput,
+  type ClawhubPublishPluginResponse,
 } from "../modules/clawhub";
 
 export type SkillweaveClientConfig = {
@@ -30,12 +30,12 @@ export class SkillweaveClient {
     return this._clawhub;
   }
 
-  async publishSkill(
-    input: ClawhubPublishSkillInput
-  ): Promise<ClawhubPublishSkillResponse> {
+  async publishPlugin(
+    input: ClawhubPublishPluginInput
+  ): Promise<ClawhubPublishPluginResponse> {
     if (!this._clawhub) {
       throw new Error(ERR_CLAWHUB_CLIENT_NOT_INITIALIZED);
     }
-    return this._clawhub.publishSkill(input);
+    return this._clawhub.publishPlugin(input);
   }
 }

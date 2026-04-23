@@ -1,8 +1,8 @@
-export type RegisterSkillInput = {
+export type RegisterPluginInput = {
   name: string;
   version: string;
 };
 
-export async function registerSkill(input: RegisterSkillInput): Promise<RegisterSkillInput> {
+export async function registerPlugin(input: RegisterPluginInput): Promise<RegisterPluginInput> {
   return input;
 }

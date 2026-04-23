@@ -1,8 +1,8 @@
 export type AccessCheckInput = {
-  skillId: string;
+  pluginId: string;
   account: string;
 };
 
 export async function checkAccess(input: AccessCheckInput): Promise<boolean> {
-  return Boolean(input.skillId && input.account);
+  return Boolean(input.pluginId && input.account);
 }
