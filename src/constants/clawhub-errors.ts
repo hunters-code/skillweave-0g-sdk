@@ -30,35 +30,35 @@ export function formatClawhubPublishFailedMessage(
   slug: string,
   detail: string
 ): string {
-  return `Failed to publish skill "${slug}": ${detail}`;
+  return `Failed to publish plugin "${slug}": ${detail}`;
 }
 export function formatClawhubDeleteFailedMessage(
   slug: string,
   detail: string
 ): string {
-  return `Failed to delete skill "${slug}": ${detail}`;
+  return `Failed to delete plugin "${slug}": ${detail}`;
 }
 export function formatClawhubUndeleteFailedMessage(
   slug: string,
   detail: string
 ): string {
-  return `Failed to undelete skill "${slug}": ${detail}`;
+  return `Failed to undelete plugin "${slug}": ${detail}`;
 }
-export function formatClawhubGetSkillFailedMessage(
+export function formatClawhubGetPluginFailedMessage(
   slug: string,
   detail: string
 ): string {
-  return `Failed to get skill "${slug}": ${detail}`;
+  return `Failed to get plugin "${slug}": ${detail}`;
 }
-export function formatClawhubListSkillsFailedMessage(detail: string): string {
-  return `Failed to list skills: ${detail}`;
+export function formatClawhubListPluginsFailedMessage(detail: string): string {
+  return `Failed to list plugins: ${detail}`;
 }
 export function formatClawhubWhoamiFailedMessage(detail: string): string {
   return `Failed whoami: ${detail}`;
 }
-export function formatClawhubSearchFailedMessage(detail: string): string {
-  return `Failed to search skills: ${detail}`;
+export function formatClawhubSearchPluginsFailedMessage(detail: string): string {
+  return `Failed to search plugins: ${detail}`;
 }
 
-export const ERR_CLAWHUB_PUBLISH_NO_FILES = "publishSkill requires at least one file";
-export const ERR_CLAWHUB_PUBLISH_SKILL_MD_REQUIRED = "ClawHub requires SKILL.md or skills.md in the uploaded files";
+export const ERR_CLAWHUB_PUBLISH_NO_FILES = "publishPlugin requires at least one file";
+export const ERR_CLAWHUB_PUBLISH_PLUGIN_MD_REQUIRED = "ClawHub requires PLUGIN.md or plugins.md in the uploaded files";

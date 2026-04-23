@@ -7,7 +7,7 @@ import {
   CLAWHUB_FORM_FIELD_FILES,
   CLAWHUB_FORM_FIELD_PAYLOAD,
   CLAWHUB_PATH_SEARCH,
-  CLAWHUB_PATH_SKILLS,
+  CLAWHUB_PATH_PLUGINS,
   CLAWHUB_PATH_WHOAMI,
   CLAWHUB_PUBLISH_ACCEPT_LICENSE_TERMS,
   CLAWHUB_PUBLISH_PAYLOAD_KEY_ACCEPT_LICENSE,
@@ -22,31 +22,31 @@ import {
   CLAWHUB_QUERY_SEARCH_Q,
   CLAWHUB_QUERY_SORT,
   CLAWHUB_TAG_LATEST,
-  CLAWHUB_SKILL_DOC_ALT,
-  CLAWHUB_SKILL_DOC_PRIMARY,
+  CLAWHUB_PLUGIN_DOC_ALT,
+  CLAWHUB_PLUGIN_DOC_PRIMARY,
   HTTP_HEADER_AUTHORIZATION,
   MIME_APPLICATION_JSON,
   MIME_TEXT_PLAIN,
-  clawhubPathSkill,
-  clawhubPathSkillUndelete,
+  clawhubPathPlugin,
+  clawhubPathPluginUndelete,
 } from "../../constants/clawhub-http";
 import {
   ERR_CLAWHUB_PUBLISH_NO_FILES,
-  ERR_CLAWHUB_PUBLISH_SKILL_MD_REQUIRED,
+  ERR_CLAWHUB_PUBLISH_PLUGIN_MD_REQUIRED,
   formatClawhubDeleteFailedMessage,
-  formatClawhubGetSkillFailedMessage,
-  formatClawhubListSkillsFailedMessage,
+  formatClawhubGetPluginFailedMessage,
+  formatClawhubListPluginsFailedMessage,
   formatClawhubPublishFailedMessage,
-  formatClawhubSearchFailedMessage,
+  formatClawhubSearchPluginsFailedMessage,
   formatClawhubUndeleteFailedMessage,
   formatClawhubWhoamiFailedMessage,
   serializeClawhubHttpErrorDetail,
 } from "../../constants/clawhub-errors";
 import { SkillweaveError } from "../../errors";
 import {
-  ClawhubDeleteSkillResponse,
-  ClawhubPublishSkillInput,
-  ClawhubPublishSkillResponse,
+  ClawhubDeletePluginResponse,
+  ClawhubPublishPluginInput,
+  ClawhubPublishPluginResponse,
 } from "./types";
 
 export type ClawhubClientConfig = {
@@ -55,12 +55,12 @@ export type ClawhubClientConfig = {
   timeoutMs?: number;
 };
 
-function hasSkillMarkdown(files: ClawhubPublishSkillInput["files"]): boolean {
+function hasPluginMarkdown(files: ClawhubPublishPluginInput["files"]): boolean {
   return files.some((f) => {
     const lower = f.relPath.toLowerCase();
     return (
-      lower === CLAWHUB_SKILL_DOC_PRIMARY.toLowerCase() ||
-      lower === CLAWHUB_SKILL_DOC_ALT.toLowerCase()
+      lower === CLAWHUB_PLUGIN_DOC_PRIMARY.toLowerCase() ||
+      lower === CLAWHUB_PLUGIN_DOC_ALT.toLowerCase()
     );
   });
 }
@@ -91,14 +91,14 @@ export class ClawhubClient {
     }
   }
 
-  async publishSkill(
-    input: ClawhubPublishSkillInput
-  ): Promise<ClawhubPublishSkillResponse> {
+  async publishPlugin(
+    input: ClawhubPublishPluginInput
+  ): Promise<ClawhubPublishPluginResponse> {
     if (input.files.length === 0) {
       throw new SkillweaveError(ERR_CLAWHUB_PUBLISH_NO_FILES);
     }
-    if (!hasSkillMarkdown(input.files)) {
-      throw new SkillweaveError(ERR_CLAWHUB_PUBLISH_SKILL_MD_REQUIRED);
+    if (!hasPluginMarkdown(input.files)) {
+      throw new SkillweaveError(ERR_CLAWHUB_PUBLISH_PLUGIN_MD_REQUIRED);
     }
     const tags = input.tags?.length ? input.tags : ["latest"];
     const payload: Record<string, unknown> = {
@@ -127,8 +127,8 @@ export class ClawhubClient {
       });
     }
     try {
-      const { data } = await this.http.post<ClawhubPublishSkillResponse>(
-        CLAWHUB_PATH_SKILLS,
+      const { data } = await this.http.post<ClawhubPublishPluginResponse>(
+        CLAWHUB_PATH_PLUGINS,
         form,
         { headers: form.getHeaders(), maxBodyLength: Infinity }
       );
@@ -143,13 +143,13 @@ export class ClawhubClient {
     }
   }
 
-  async getSkill(slug: string): Promise<unknown> {
+  async getPlugin(slug: string): Promise<unknown> {
     try {
-      const { data } = await this.http.get<unknown>(clawhubPathSkill(slug));
+      const { data } = await this.http.get<unknown>(clawhubPathPlugin(slug));
       return data;
     } catch (err) {
       throw new SkillweaveError(
-        formatClawhubGetSkillFailedMessage(
+        formatClawhubGetPluginFailedMessage(
           slug,
           serializeClawhubHttpErrorDetail(err)
         )
@@ -157,13 +157,13 @@ export class ClawhubClient {
     }
   }
 
-  async listSkills(params?: {
+  async listPlugins(params?: {
     limit?: number;
     sort?: string;
     cursor?: string;
   }): Promise<unknown> {
     try {
-      const { data } = await this.http.get<unknown>(CLAWHUB_PATH_SKILLS, {
+      const { data } = await this.http.get<unknown>(CLAWHUB_PATH_PLUGINS, {
         params: {
           [CLAWHUB_QUERY_LIMIT]: params?.limit,
           [CLAWHUB_QUERY_SORT]: params?.sort,
@@ -173,12 +173,12 @@ export class ClawhubClient {
       return data;
     } catch (err) {
       throw new SkillweaveError(
-        formatClawhubListSkillsFailedMessage(serializeClawhubHttpErrorDetail(err))
+        formatClawhubListPluginsFailedMessage(serializeClawhubHttpErrorDetail(err))
       );
     }
   }
 
-  async searchSkills(query: string): Promise<unknown> {
+  async searchPlugins(query: string): Promise<unknown> {
     try {
       const { data } = await this.http.get<unknown>(CLAWHUB_PATH_SEARCH, {
         params: { [CLAWHUB_QUERY_SEARCH_Q]: query },
@@ -186,15 +186,15 @@ export class ClawhubClient {
       return data;
     } catch (err) {
       throw new SkillweaveError(
-        formatClawhubSearchFailedMessage(serializeClawhubHttpErrorDetail(err))
+        formatClawhubSearchPluginsFailedMessage(serializeClawhubHttpErrorDetail(err))
       );
     }
   }
 
-  async deleteSkill(slug: string): Promise<ClawhubDeleteSkillResponse> {
+  async deletePlugin(slug: string): Promise<ClawhubDeletePluginResponse> {
     try {
-      const { data } = await this.http.delete<ClawhubDeleteSkillResponse>(
-        clawhubPathSkill(slug)
+      const { data } = await this.http.delete<ClawhubDeletePluginResponse>(
+        clawhubPathPlugin(slug)
       );
       return data;
     } catch (err) {
@@ -207,10 +207,10 @@ export class ClawhubClient {
     }
   }
 
-  async undeleteSkill(slug: string): Promise<ClawhubDeleteSkillResponse> {
+  async undeletePlugin(slug: string): Promise<ClawhubDeletePluginResponse> {
     try {
-      const { data } = await this.http.post<ClawhubDeleteSkillResponse>(
-        clawhubPathSkillUndelete(slug)
+      const { data } = await this.http.post<ClawhubDeletePluginResponse>(
+        clawhubPathPluginUndelete(slug)
       );
       return data;
     } catch (err) {

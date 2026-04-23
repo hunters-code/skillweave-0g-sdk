@@ -12,21 +12,21 @@ export const CLAWHUB_DEFAULT_TIMEOUT_MS = 30_000;
 
 const SEGMENT_API = "api";
 const SEGMENT_V1 = "v1";
-const SEGMENT_SKILLS = "skills";
+const SEGMENT_PLUGINS = "plugins";
 const SEGMENT_WHOAMI = "whoami";
 const SEGMENT_UNDELETE = "undelete";
 const ROOT = "";
 
 export const CLAWHUB_PATH_API_V1 = `${ROOT}/${SEGMENT_API}/${SEGMENT_V1}`;
 export const CLAWHUB_PATH_WHOAMI = `${CLAWHUB_PATH_API_V1}/${SEGMENT_WHOAMI}`;
-export const CLAWHUB_PATH_SKILLS = `${CLAWHUB_PATH_API_V1}/${SEGMENT_SKILLS}`;
+export const CLAWHUB_PATH_PLUGINS = `${CLAWHUB_PATH_API_V1}/${SEGMENT_PLUGINS}`;
 
-export function clawhubPathSkill(slug: string): string {
-  return `${CLAWHUB_PATH_SKILLS}/${encodeURIComponent(slug)}`;
+export function clawhubPathPlugin(slug: string): string {
+  return `${CLAWHUB_PATH_PLUGINS}/${encodeURIComponent(slug)}`;
 }
 
-export function clawhubPathSkillUndelete(slug: string): string {
-  return `${clawhubPathSkill(slug)}/${SEGMENT_UNDELETE}`;
+export function clawhubPathPluginUndelete(slug: string): string {
+  return `${clawhubPathPlugin(slug)}/${SEGMENT_UNDELETE}`;
 }
 
 export const CLAWHUB_FORM_FIELD_PAYLOAD = "payload";
@@ -46,5 +46,5 @@ export const CLAWHUB_QUERY_SEARCH_Q = "q";
 export const CLAWHUB_TAG_LATEST = "latest";
 export const CLAWHUB_PATH_SEARCH = `${CLAWHUB_PATH_API_V1}/search`;
 export const MIME_TEXT_PLAIN = "text/plain";
-export const CLAWHUB_SKILL_DOC_PRIMARY = "SKILL.md";
-export const CLAWHUB_SKILL_DOC_ALT = "skills.md";
+export const CLAWHUB_PLUGIN_DOC_PRIMARY = "PLUGIN.md";
+export const CLAWHUB_PLUGIN_DOC_ALT = "plugins.md";

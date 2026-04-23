@@ -1,4 +1,4 @@
-export type ClawhubSkillFile = {
+export type ClawhubPluginFile = {
   relPath: string;
   bytes: Uint8Array | Buffer;
   contentType?: string;
@@ -9,22 +9,22 @@ export type ClawhubForkOf = {
   version?: string;
 };
 
-export type ClawhubPublishSkillInput = {
+export type ClawhubPublishPluginInput = {
   slug: string;
   displayName: string;
   version: string;
-  files: ClawhubSkillFile[];
+  files: ClawhubPluginFile[];
   changelog?: string;
   tags?: string[];
   forkOf?: ClawhubForkOf;
 };
 
-export type ClawhubPublishSkillResponse = {
+export type ClawhubPublishPluginResponse = {
   ok: true;
-  skillId: string;
+  pluginId: string;
   versionId: string;
 };
 
-export type ClawhubDeleteSkillResponse = {
+export type ClawhubDeletePluginResponse = {
   ok: true;
 };
